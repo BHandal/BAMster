@@ -26,83 +26,90 @@ namespace BAMster
         StringBuilder samps;
         private void executeBtn_Click(object sender, EventArgs e)
         {
-            if (executeBtn.Text.ToLower() == "analyze")
+            if (sampleList.Items.Count > 0)
             {
-                if (File.Exists(featureBox.Text))
+                if (executeBtn.Text.ToLower() == "analyze")
                 {
-                    //analyze samples
-                    doesnotexist = new StringBuilder();
-                    args = new StringBuilder();
-                    samps = new StringBuilder();
-                    int i = 1;
-                    foreach (string path in sampleList.Items)
+                    if (File.Exists(featureBox.Text))
                     {
-                        
-                        if (!File.Exists(path + "_bamster.csv"))
+                        //analyze samples
+                        doesnotexist = new StringBuilder();
+                        args = new StringBuilder();
+                        samps = new StringBuilder();
+                        int i = 1;
+                        foreach (string path in sampleList.Items)
                         {
-                            if (File.Exists(path))
+
+                            if (!File.Exists(path + "_bamster.csv"))
                             {
-                                string fn = Path.GetFileNameWithoutExtension(path);
-                                args.Append("java -Xmx8g -jar " + @"""" + Properties.Settings.Default.bamstats_api + @"""" + " -v simple -m -f " + @"""" + featureBox.Text + @"""" + " -i " + @"""" + path + @"""" + " -o " + @"""" + path + "_bamster.csv" + @"""" + " & ");
-                                samps.AppendLine(i+".) "+fn);
-                                i++;
+                                if (File.Exists(path))
+                                {
+                                    string fn = Path.GetFileNameWithoutExtension(path);
+                                    args.Append("java -Xmx8g -jar " + @"""" + Properties.Settings.Default.bamstats_api + @"""" + " -v simple -m -f " + @"""" + featureBox.Text + @"""" + " -i " + @"""" + path + @"""" + " -o " + @"""" + path + "_bamster.csv" + @"""" + " & ");
+                                    samps.AppendLine(i + ".) " + fn);
+                                    i++;
+                                }
+                                else
+                                {
+                                    doesnotexist.Append("-" + path + Environment.NewLine);
+                                }
+                            }
+                        }
+
+
+                        if (doesnotexist.Length <= 0)
+                        {
+                            if (File.Exists(Properties.Settings.Default.bamstats_api))
+                            {
+                                DialogResult dialogResult = MessageBox.Show("Ready to start analysis?" + Environment.NewLine + Environment.NewLine + "Samples:" + Environment.NewLine + samps.ToString(), "BAMster - Checkpoint", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                if (dialogResult == DialogResult.Yes)
+                                {
+                                    tabControl.SelectedTab = consoleTab;
+                                    terminal.ClearOutput();
+                                    resultList.Items.Clear();
+                                    utilityBtn.Enabled = false;
+                                    executeBtn.Text = "CANCEL";
+                                    bamStatus.Text = "Analyzing...";
+
+                                    terminal.StartProcess("cmd.exe", @"/C " + args.ToString(0, args.Length - 2));
+                                }
+                                else { dialogResult = DialogResult.Cancel; }
                             }
                             else
                             {
-                                doesnotexist.Append("-" + path + Environment.NewLine);
+                                MessageBox.Show("The API Jar file does not exist: " + Environment.NewLine + Environment.NewLine + Properties.Settings.Default.bamstats_api, "BAMster - File Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                using (settings setDialog = new settings())
+                                {
+                                    setDialog.ShowDialog();
+                                }
                             }
-                        }
-                    }
-
-                    if (doesnotexist.Length <= 0)
-                    {
-                        if (File.Exists(Properties.Settings.Default.bamstats_api))
-                        {
-                            DialogResult dialogResult = MessageBox.Show("Ready to start analysis?" + Environment.NewLine + Environment.NewLine + "Samples:" + Environment.NewLine + samps.ToString(), "BAMster - Checkpoint", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                            if (dialogResult == DialogResult.Yes)
-                            {
-                                tabControl.SelectedTab = consoleTab;
-                                terminal.ClearOutput();
-                                executeBtn.Text = "CANCEL";
-                                bamStatus.Text = "Analyzing...";
-
-                                terminal.StartProcess("cmd.exe", @"/C " + args.ToString(0, args.Length - 2));
-                            }
-                            else { dialogResult = DialogResult.Cancel; }
                         }
                         else
                         {
-                            MessageBox.Show("The API Jar file does not exist: " + Environment.NewLine + Environment.NewLine + Properties.Settings.Default.bamstats_api, "BAMster - File Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            using (settings setDialog = new settings())
-                            {
-                                setDialog.ShowDialog();
-                            }
+                            MessageBox.Show("Input contains file(s) that do not exist, see below:" + Environment.NewLine + doesnotexist.ToString(0, doesnotexist.Length - 1), "BAMster - 404 Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
+
                     }
                     else
                     {
-                        MessageBox.Show("Input contains file(s) that do not exist, see below:" + Environment.NewLine + doesnotexist.ToString(0, doesnotexist.Length - 1), "BAMster - 404 Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Please select a valid bed file.", "BAMster - 404 Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    
-                }
-                else
-                {
-                    MessageBox.Show("Please select a valid bed file.", "BAMster - 404 Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                
-            }
-            else if (executeBtn.Text.ToLower() == "cancel")
-            {
-                bamStatus.Text = "Cancelled!";
-                terminal.StopProcess();
-                //cancel analysis
-                executeBtn.Text = "ANALYZE";
 
+                }
+                else if (executeBtn.Text.ToLower() == "cancel")
+                {
+                    bamStatus.Text = "Cancelled!";
+                    terminal.StopProcess();
+                    //cancel analysis
+                    executeBtn.Text = "ANALYZE";
+
+                }
             }
         }
         private void utilityBtn_Click(object sender, EventArgs e)
         {
             this.sampleList.Items.Clear();
+            this.resultList.Items.Clear();
             this.terminal.ClearOutput();
             default1();
         }
@@ -121,6 +128,38 @@ namespace BAMster
 
         #region menus
         Process cmdProcess;
+        private void resultList_DoubleClick(object sender, EventArgs e)
+        {
+            viewResultStripMenuItem_Click(sender, e);
+        }
+        private void viewResultStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (resultList.SelectedIndex > -1)
+            {
+                if (File.Exists(resultList.SelectedItem.ToString()))
+                {
+                    string args = string.Format(@"/select, {0}", resultList.SelectedItem.ToString());
+                    ProcessStartInfo pfi = new ProcessStartInfo("Explorer.exe", args);
+                    System.Diagnostics.Process.Start(pfi);
+                }
+                else
+                {
+                    MessageBox.Show("File not found.", "BAMster - 404 Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+        }
+        private void deleteResultStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (resultList.SelectedIndex > -1)
+            {
+                resultList.Items.Remove(resultList.SelectedItem);
+            }
+            if (resultList.Items.Count <= 0)
+            {
+                default1();
+            }
+        }
         private void viewerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(File.Exists(Properties.Settings.Default.bamstats_gui))
@@ -163,7 +202,12 @@ namespace BAMster
             MessageBox.Show("You're on your own!", "BAMster is sorry...", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
-        private void viewInToolStripMenuItem_Click(object sender, EventArgs e)
+        private void sampleList_DoubleClick(object sender, EventArgs e)
+        {
+            viewSampleToolStripMenuItem_Click(sender, e);
+        }
+
+        private void viewSampleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (sampleList.SelectedIndex > -1)
             {
@@ -181,7 +225,7 @@ namespace BAMster
             }
 
         }
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        private void deleteSampleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (sampleList.SelectedIndex > -1)
             {
@@ -241,12 +285,16 @@ namespace BAMster
         
         private void default1()
         {
+            this.sampleList.HorizontalExtent = 0;
+            this.resultList.HorizontalExtent = 0;
             this.msgLabel.Visible = true;
+            this.label1.Visible = true;
             this.utilityBtn.Enabled = false;
             this.executeBtn.Enabled = false;
         }
         private void default2()
         {
+            this.sampleList.HorizontalExtent = 999;
             this.msgLabel.Visible = false;
             this.utilityBtn.Enabled = true;
             this.executeBtn.Enabled = true;
@@ -274,11 +322,102 @@ namespace BAMster
         {
             if (!terminal.IsProcessRunning)
             {
-                bamStatus.Text = "Ready";
+                bamStatus.Text = "Completed!";
                 executeBtn.Text = "ANALYZE";
-                terminal.WriteOutput(Environment.NewLine + "Analysis has completed.", Color.White);
+                utilityBtn.Enabled = true;
+                terminal.WriteInput(Environment.NewLine + "Analysis has completed.", Color.White, true);
+                if(sampleList.Items.Count > 0)
+                {
+                    foreach (string path in sampleList.Items)
+                    {
+                        if (File.Exists(path+ "_bamster.csv") && !resultList.Items.Contains(path + "_bamster.csv"))
+                        {
+                            resultList.Items.Add(path + "_bamster.csv");
+                        }
+                    }
+                    tabControl.SelectedTab = resultTab;
+                    this.resultList.HorizontalExtent = 999;
+                    sampleList.Items.Clear();
+                }
             }
         }
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl.SelectedTab == analysisTab && bamStatus.Text == "Completed!")
+            {
+                bamStatus.Text = "Ready";
+            }
+            else if (tabControl.SelectedTab == resultTab && resultList.Items.Count > 0)
+            {
+                label1.Visible = false;
+            }
+            else if (tabControl.SelectedTab == resultTab && resultList.Items.Count <= 0)
+            {
+                label1.Visible = true;
+            }
+        }
+        
+        private void resultList_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            bool isSelected = ((e.State & DrawItemState.Selected) == DrawItemState.Selected);
+
+            if (e.Index > -1)
+            {
+                /* If the item is selected set the background color to SystemColors.Highlight 
+                 or else set the color to either WhiteSmoke or White depending if the item index is even or odd */
+                Color color = isSelected ? SystemColors.Highlight :
+                    e.Index % 2 == 0 ? Color.AliceBlue : Color.White;
+
+                // Background item brush
+                SolidBrush backgroundBrush = new SolidBrush(color);
+                // Text color brush
+                SolidBrush textBrush = new SolidBrush(e.ForeColor);
+
+                // Draw the background
+                e.Graphics.FillRectangle(backgroundBrush, e.Bounds);
+                // Draw the text
+                e.Graphics.DrawString(resultList.Items[e.Index].ToString(), e.Font, textBrush, e.Bounds, StringFormat.GenericDefault);
+
+                // Clean up
+                backgroundBrush.Dispose();
+                textBrush.Dispose();
+            }
+            resultList.HorizontalScrollbar = true;
+            e.DrawFocusRectangle();
+        }
+
+        private void sampleList_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            bool isSelected = ((e.State & DrawItemState.Selected) == DrawItemState.Selected);
+
+            if (e.Index > -1)
+            {
+                /* If the item is selected set the background color to SystemColors.Highlight 
+                 or else set the color to either WhiteSmoke or White depending if the item index is even or odd */
+                Color color = isSelected ? SystemColors.Highlight :
+                    e.Index % 2 == 0 ? Color.AliceBlue : Color.White;
+
+                // Background item brush
+                SolidBrush backgroundBrush = new SolidBrush(color);
+                // Text color brush
+                SolidBrush textBrush = new SolidBrush(e.ForeColor);
+
+                // Draw the background
+                e.Graphics.FillRectangle(backgroundBrush, e.Bounds);
+                // Draw the text
+                e.Graphics.DrawString(sampleList.Items[e.Index].ToString(), e.Font, textBrush, e.Bounds, StringFormat.GenericDefault);
+
+                // Clean up
+                backgroundBrush.Dispose();
+                textBrush.Dispose();
+            }
+            e.DrawFocusRectangle();
+        }
         #endregion
+
+
+
+
     }
 }
