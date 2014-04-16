@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BAMster.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="bamstats_gui" Type="System.String" Scope="User">
+      <Value Profile="(Default)">S:\Research-Development\NEXT GENERATION SEQUENCING\tools\BAMStats-1.25\jar\BAMStats-GUI-1.25.jar</Value>
+    </Setting>
+    <Setting Name="bamstats_api" Type="System.String" Scope="User">
+      <Value Profile="(Default)">S:\Research-Development\NEXT GENERATION SEQUENCING\tools\BAMStats-1.25\jar\BAMStats-API-1.25.jar</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
