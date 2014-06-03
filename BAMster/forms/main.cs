@@ -39,13 +39,19 @@ namespace BAMster
                         int i = 1;
                         foreach (string path in sampleList.Items)
                         {
-
-                            if (!File.Exists(path + "_bamster.csv"))
+                            string bamstatout = Path.GetDirectoryName(path) + @"\bamstats\";
+                            string bamstatFN = bamstatout + Path.GetFileName(path) + "_bamster.csv";
+                            if (!File.Exists(bamstatFN))
                             {
+                                
+                                if (!Directory.Exists(bamstatout))
+                                {
+                                    Directory.CreateDirectory(bamstatout);
+                                }
                                 if (File.Exists(path))
                                 {
                                     string fn = Path.GetFileNameWithoutExtension(path);
-                                    args.Append("java -Xmx8g -jar " + @"""" + Properties.Settings.Default.bamstats_api + @"""" + " -v simple -m -f " + @"""" + featureBox.Text + @"""" + " -i " + @"""" + path + @"""" + " -o " + @"""" + path + "_bamster.csv" + @"""" + " & ");
+                                    args.Append("java -Xmx8g -jar " + @"""" + Properties.Settings.Default.bamstats_api + @"""" + " -v simple -f " + @"""" + featureBox.Text + @"""" + " -i " + @"""" + path + @"""" + " -o " + @"""" + bamstatFN + @"""" + " & ");
                                     samps.AppendLine(i + ".) " + fn);
                                     i++;
                                 }
@@ -250,7 +256,9 @@ namespace BAMster
                     string filepath = file;
                     if (ext == ".bam" || ext == ".sam")
                     {
-                        if (!File.Exists(filepath + "_bamster.csv"))
+                        string bamstatout = Path.GetDirectoryName(filepath) + @"\bamstats\";
+                        string bamstatFN = bamstatout + Path.GetFileName(filepath) + "_bamster.csv";
+                        if (!File.Exists(bamstatFN))
                         {
                             default2();
                             if (!sampleList.Items.Contains(filepath))
@@ -328,16 +336,21 @@ namespace BAMster
                 terminal.WriteInput(Environment.NewLine + "Analysis has completed.", Color.White, true);
                 if(sampleList.Items.Count > 0)
                 {
+
                     foreach (string path in sampleList.Items)
                     {
-                        if (File.Exists(path+ "_bamster.csv") && !resultList.Items.Contains(path + "_bamster.csv"))
+                        string bamstatout = Path.GetDirectoryName(path) + @"\bamstats\";
+                        string bamstatFN = bamstatout + Path.GetFileName(path) + "_bamster.csv";
+                        if (File.Exists(bamstatFN) && !resultList.Items.Contains(bamstatFN))
                         {
-                            resultList.Items.Add(path + "_bamster.csv");
+                            resultList.Items.Add(bamstatFN);
                         }
                     }
                     tabControl.SelectedTab = resultTab;
                     this.resultList.HorizontalExtent = 999;
                     sampleList.Items.Clear();
+                    executeBtn.Enabled = false;
+                    msgLabel.Visible = true;
                 }
             }
         }
@@ -415,6 +428,7 @@ namespace BAMster
             e.DrawFocusRectangle();
         }
         #endregion
+
 
 
 

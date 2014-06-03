@@ -49,14 +49,14 @@
             this.analysisTab = new System.Windows.Forms.TabPage();
             this.featureBox = new System.Windows.Forms.TextBox();
             this.sampleList = new System.Windows.Forms.ListBox();
-            this.consoleTab = new System.Windows.Forms.TabPage();
-            this.terminal = new ConsoleControl.ConsoleControl();
             this.resultTab = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.resultList = new System.Windows.Forms.ListBox();
             this.resultListMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.viewResultStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteResultStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.consoleTab = new System.Windows.Forms.TabPage();
+            this.terminal = new ConsoleControl.ConsoleControl();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.bamStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
@@ -64,9 +64,9 @@
             this.menuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.analysisTab.SuspendLayout();
-            this.consoleTab.SuspendLayout();
             this.resultTab.SuspendLayout();
             this.resultListMenu.SuspendLayout();
+            this.consoleTab.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,11 +110,11 @@
             // 
             this.msgLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.msgLabel.AutoSize = true;
-            this.msgLabel.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.msgLabel.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.msgLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.msgLabel.Location = new System.Drawing.Point(132, 96);
+            this.msgLabel.Location = new System.Drawing.Point(147, 96);
             this.msgLabel.Name = "msgLabel";
-            this.msgLabel.Size = new System.Drawing.Size(297, 30);
+            this.msgLabel.Size = new System.Drawing.Size(283, 30);
             this.msgLabel.TabIndex = 58;
             this.msgLabel.Text = "Drag and Drop BAM/SAM files";
             // 
@@ -223,8 +223,8 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.analysisTab);
-            this.tabControl.Controls.Add(this.consoleTab);
             this.tabControl.Controls.Add(this.resultTab);
+            this.tabControl.Controls.Add(this.consoleTab);
             this.tabControl.Location = new System.Drawing.Point(2, 27);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -275,35 +275,12 @@
             this.sampleList.MinimumSize = new System.Drawing.Size(561, 208);
             this.sampleList.Name = "sampleList";
             this.sampleList.Size = new System.Drawing.Size(561, 208);
+            this.sampleList.Sorted = true;
             this.sampleList.TabIndex = 60;
             this.sampleList.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.sampleList_DrawItem);
             this.sampleList.DragDrop += new System.Windows.Forms.DragEventHandler(this.sampleList_DragDrop);
             this.sampleList.DragEnter += new System.Windows.Forms.DragEventHandler(this.sampleList_DragEnter);
             this.sampleList.DoubleClick += new System.EventHandler(this.sampleList_DoubleClick);
-            // 
-            // consoleTab
-            // 
-            this.consoleTab.Controls.Add(this.terminal);
-            this.consoleTab.Location = new System.Drawing.Point(4, 26);
-            this.consoleTab.Name = "consoleTab";
-            this.consoleTab.Padding = new System.Windows.Forms.Padding(3);
-            this.consoleTab.Size = new System.Drawing.Size(570, 249);
-            this.consoleTab.TabIndex = 1;
-            this.consoleTab.Text = "CONSOLE";
-            this.consoleTab.UseVisualStyleBackColor = true;
-            // 
-            // terminal
-            // 
-            this.terminal.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.terminal.IsInputEnabled = true;
-            this.terminal.Location = new System.Drawing.Point(3, 3);
-            this.terminal.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.terminal.Name = "terminal";
-            this.terminal.SendKeyboardCommandsToProcess = false;
-            this.terminal.ShowDiagnostics = false;
-            this.terminal.Size = new System.Drawing.Size(564, 243);
-            this.terminal.TabIndex = 0;
-            this.terminal.OnConsoleOutput += new ConsoleControl.ConsoleEventHanlder(this.terminal_OnConsoleOutput);
             // 
             // resultTab
             // 
@@ -321,11 +298,11 @@
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label1.Location = new System.Drawing.Point(196, 120);
+            this.label1.Location = new System.Drawing.Point(207, 112);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(178, 30);
+            this.label1.Size = new System.Drawing.Size(172, 30);
             this.label1.TabIndex = 62;
             this.label1.Text = "No data present...";
             // 
@@ -345,6 +322,7 @@
             this.resultList.MinimumSize = new System.Drawing.Size(561, 208);
             this.resultList.Name = "resultList";
             this.resultList.Size = new System.Drawing.Size(564, 243);
+            this.resultList.Sorted = true;
             this.resultList.TabIndex = 61;
             this.resultList.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.resultList_DrawItem);
             this.resultList.DoubleClick += new System.EventHandler(this.resultList_DoubleClick);
@@ -372,6 +350,30 @@
             this.deleteResultStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.deleteResultStripMenuItem.Text = "Delete";
             this.deleteResultStripMenuItem.Click += new System.EventHandler(this.deleteResultStripMenuItem_Click);
+            // 
+            // consoleTab
+            // 
+            this.consoleTab.Controls.Add(this.terminal);
+            this.consoleTab.Location = new System.Drawing.Point(4, 26);
+            this.consoleTab.Name = "consoleTab";
+            this.consoleTab.Padding = new System.Windows.Forms.Padding(3);
+            this.consoleTab.Size = new System.Drawing.Size(570, 249);
+            this.consoleTab.TabIndex = 1;
+            this.consoleTab.Text = "CONSOLE";
+            this.consoleTab.UseVisualStyleBackColor = true;
+            // 
+            // terminal
+            // 
+            this.terminal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.terminal.IsInputEnabled = true;
+            this.terminal.Location = new System.Drawing.Point(3, 3);
+            this.terminal.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.terminal.Name = "terminal";
+            this.terminal.SendKeyboardCommandsToProcess = false;
+            this.terminal.ShowDiagnostics = false;
+            this.terminal.Size = new System.Drawing.Size(564, 243);
+            this.terminal.TabIndex = 0;
+            this.terminal.OnConsoleOutput += new ConsoleControl.ConsoleEventHanlder(this.terminal_OnConsoleOutput);
             // 
             // statusStrip
             // 
@@ -416,10 +418,10 @@
             this.tabControl.ResumeLayout(false);
             this.analysisTab.ResumeLayout(false);
             this.analysisTab.PerformLayout();
-            this.consoleTab.ResumeLayout(false);
             this.resultTab.ResumeLayout(false);
             this.resultTab.PerformLayout();
             this.resultListMenu.ResumeLayout(false);
+            this.consoleTab.ResumeLayout(false);
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
